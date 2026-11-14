@@ -1,6 +1,6 @@
 import Skeleton from "@/components/common/Skeleton";
 import EventCard from "@/components/events/EventCard";
-import FeaturedCarousel from "@/components/events/FeaturedCarousel";
+import FeaturedCarousel from "@/components/common/FeaturedCarousel";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import {
