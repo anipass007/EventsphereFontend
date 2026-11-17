@@ -1,5 +1,7 @@
 import axios from "axios";
 
+//Create ek axios instance hai
+
 const api = axios.create({
   baseURL: "https://eventsphere-server-mfdb.onrender.com",
 });
