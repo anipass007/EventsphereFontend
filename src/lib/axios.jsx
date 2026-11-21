@@ -1,7 +1,5 @@
 import axios from "axios";
 
-//Create ek axios instance hai
-
 const api = axios.create({
   baseURL: "https://eventsphere-server-mfdb.onrender.com",
 });
@@ -16,7 +14,7 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => {
-    return response.data.data;
+    return response.data;
   },
   (err) => {},
 );

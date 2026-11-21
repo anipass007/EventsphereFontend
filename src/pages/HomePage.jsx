@@ -1,8 +1,8 @@
 import Skeleton from "@/components/common/Skeleton";
 import EventCard from "@/components/events/EventCard";
-import FeaturedCarousel from "@/components/common/FeaturedCarousel";
+import FeaturedCarousel from "@/components/events/FeaturedCarousel";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
+import api from "@/lib/axios";
 import {
   ArrowBigRight,
   ArrowRight,
@@ -114,28 +114,18 @@ export default function Home() {
     async function loadHomePage() {
       setIsLoading(true);
       try {
-        let {
-          data: { data },
-        } = await axios.get(
-          "https://eventsphere-server-mfdb.onrender.com/api/events/featured",
-        );
+        let { data } = await api.get("/api/events/featured");
         setFeaturedEvents(data);
       } catch (error) {}
 
       try {
-        let {
-          data: { data },
-        } = await axios.get(
-          "https://eventsphere-server-mfdb.onrender.com/api/categories",
-        );
+        let { data } = await api.get("/api/categories");
         setCategories(data);
       } catch (error) {}
 
       try {
-        let {
-          data: { data },
-        } = await axios.get(
-          "https://eventsphere-server-mfdb.onrender.com/api/events?limit=8&sort=startDate&order=asc",
+        let { data } = await api.get(
+          "/api/events?limit=8&sort=startDate&order=asc",
         );
         setTrendingEvents(data);
       } catch (error) {}
@@ -295,7 +285,7 @@ export default function Home() {
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <Skeleton />
+              <Skeleton key={i} />
             ))}
           </div>
         ) : (
