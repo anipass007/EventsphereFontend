@@ -32,13 +32,13 @@ const Modes = {
 export default function EventDetailsPage() {
   const { slug } = useParams();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [event, setEvent] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [event, setEvent] = useState([]);
   const [reviews, setReviews] = useState([]);
   const dispatch = useDispatch();
   const isFavorite = useSelector((state) =>
     state.favorites.items.some(
-      (e) => (e.id || e._id) === (event?.id || event?._id),
+      (e) => (e.id || e._id) === (event.id || event._id),
     ),
   );
 
@@ -49,7 +49,8 @@ export default function EventDetailsPage() {
         let { data } = await api.get(`/api/events/${slug}`);
         setEvent(data);
 
-        let { data: reviews } = await api.get(`/api/events/${data.id || data._id}/reviews`,
+        let { data: reviews } = await api.get(
+          `/api/events/${data.id || data._id}/reviews`,
         );
         setReviews(reviews);
       } catch (error) {}
@@ -283,7 +284,7 @@ export default function EventDetailsPage() {
             <div className="flex items-baseline justify-between pb-4 border-b border-[#F2EFE8]">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-wider text-stone-400">
-                  Admission Pass
+                  Entry Pass
                 </span>
                 <div className="text-3xl font-extrabold text-stone-900 mt-0.5">
                   {formatPrice(event.price, event.currency)}

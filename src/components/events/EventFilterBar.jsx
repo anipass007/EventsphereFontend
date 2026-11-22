@@ -1,8 +1,37 @@
-import { setFormat } from "@/store/slices/filterSlice";
-import { useDispatch } from "react-redux";
+import { setIsPaid, setFormat } from "@/store/slices/filterSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "react-router";
 
 export default function EventFilterBar() {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const filters = useSelector((state) => state.filters);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  function updateParams(updates) {
+    const params = new URLSearchParams(searchParams);
+    Object.entries(updates).forEach(([key, val]) => {
+      if (val !== undefined && val !== "" && val !== null) {
+        params.set(key, String(val));
+      } else {
+        params.delete(key);
+      }
+    });
+    setSearchParams(params);
+  }
+
+  function handleFormatChange(format) {
+    dispatch(setFormat(format));
+    updateParams({ format });
+  }
+
+  function handleIsPaid(entry) {
+    dispatch(setIsPaid(entry));
+    updateParams({ isPaid: entry });
+  }
+
+  const activeFormat = searchParams.get("format") || filters.format;
+
   return (
     <div className="space-y-4">
       {/* Top Search & Primary Filters Row */}
@@ -192,31 +221,50 @@ export default function EventFilterBar() {
             <button
               key={i}
               type="button"
-              onClick={() => dispatch(setFormat(f))}
-              className="px-2.5 py-1 rounded-lg border text-xs font-medium capitalize transition-all cursor-pointer bg-stone-800 text-white border-stone-800"
+              onClick={() => handleFormatChange(f)}
+              className={`px-2.5 py-1 rounded-lg border text-xs font-medium capitalize transition-all cursor-pointer ${
+                activeFormat === f
+                  ? "bg-stone-800 text-white border-stone-800"
+                  : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+              }`}
             >
-              {f === "" ? "All Formats" : f}
+              {f ? f : "All Formats"}
             </button>
           ))}
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-stone-700">Admission:</span>
+          <span className="font-semibold text-stone-700">Entry:</span>
           <button
             type="button"
-            className="px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer bg-stone-800 text-white border-stone-800"
+            onClick={() => handleIsPaid("")}
+            className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+              filters.isPaid ===  "" || null
+                ? "bg-stone-800 text-white border-stone-800"
+                : "bg-white border-[#DDD9CE] text-stone-600"
+            }`}
           >
             All
           </button>
           <button
+            onClick={() => handleIsPaid(false)} // isPaid = false
             type="button"
-            className="px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+            className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+              filters.isPaid === false
+                ? "bg-emerald-700 text-white border-emerald-700"
+                : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+            }`}
           >
             Free
           </button>
           <button
+            onClick={() => handleIsPaid(true)} // isPaid = true
             type="button"
-            className="px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+            className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+              filters.isPaid === true
+                ? "bg-stone-800 text-white border-stone-800"
+                : "bg-white border-[#DDD9CE] text-stone-600 hover:bg-stone-50"
+            }`}
           >
             Paid
           </button>
