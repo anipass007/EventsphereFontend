@@ -5,14 +5,14 @@ export function useEventFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const isPaidParam = searchParams.get("isPaid");
-    const filters = useMemo(() => {
-      return {
-        format: searchParams.get("format") || "",
-        isPaid:
-          isPaidParam === "true" ? true : isPaidParam === "false" ? false : "",
-      };
-    }, [searchParams]);
-
+  const filters = useMemo(() => {
+    return {
+      format: searchParams.get("format") || "",
+      isPaid:
+        isPaidParam === "true" ? true : isPaidParam === "false" ? false : "",
+      category: searchParams.get("category") || "",
+    };
+  }, [searchParams]);
 
   function updateParams(updates) {
     const params = new URLSearchParams(searchParams);
@@ -34,6 +34,9 @@ export function useEventFilters() {
 
     if (filters.isPaid !== "") {
       params.set("isPaid", String(filters.isPaid));
+    }
+    if (filters.category) {
+      params.set("category", String(filters.category));
     }
     return params.toString();
   }
