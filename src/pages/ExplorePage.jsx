@@ -26,7 +26,10 @@ export default function ExplorePage() {
       setIsLoadingMore(true);
     }
 
-    let str = `${apiQueryString()}&page=${page}`;
+    // let str = `${apiQueryString()}&page=${page}`;
+
+    let str = [`${apiQueryString()}`, `page=${page}`].filter(Boolean).join("&")
+
 
     try {
       const { data: events, pagination } = await api.get(`/api/events?${str}`);
