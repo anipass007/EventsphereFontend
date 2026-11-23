@@ -1,13 +1,10 @@
 import Skeleton from "@/components/common/Skeleton";
 import EventCard from "@/components/events/EventCard";
 import EventFilterBar from "@/components/events/EventFilterBar";
+import { useEventFilters } from "@/hooks/useEventFilters";
 import api from "@/lib/axios";
-import { setFormat, setIsPaid } from "@/store/slices/filterSlice";
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "react-intersection-observer";
-import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router";
-
 export default function ExplorePage() {
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -18,10 +15,8 @@ export default function ExplorePage() {
     hasMore: false,
   });
 
-  const filters = useSelector((state) => state.filters);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const dispatch = useDispatch();
   const activeRequestId = useRef(0);
+  const { filters, apiQueryString } = useEventFilters();
 
   async function fetchEvents(page = 1, append = false) {
     const thisRequestId = ++activeRequestId.current;
@@ -30,19 +25,11 @@ export default function ExplorePage() {
     } else {
       setIsLoadingMore(true);
     }
-    const params = new URLSearchParams();
-    params.set("page", page);
-    if (filters.format) {
-      params.set("format", filters.format);
-    }
 
-    if (filters.isPaid !== "") {
-      params.set("isPaid", String(filters.isPaid));
-    }
+    let str = `${apiQueryString()}&page=${page}`;
+
     try {
-      const { data: events, pagination } = await api.get(
-        `/api/events?${params.toString()}`,
-      );
+      const { data: events, pagination } = await api.get(`/api/events?${str}`);
 
       if (thisRequestId !== activeRequestId.current) {
         return;
@@ -62,26 +49,8 @@ export default function ExplorePage() {
   }
 
   useEffect(() => {
-    const urlFormat = searchParams.get("format");
-    const urlIsPaid = searchParams.get("isPaid");
-
-    if (urlFormat) {
-      dispatch(setFormat(urlFormat));
-    } else {
-      dispatch(setFormat(""));
-    }
-
-    if (urlIsPaid !== "" && urlIsPaid !== null) {
-      console.log(urlIsPaid);
-      dispatch(setIsPaid(urlIsPaid === "true" ? true : false));
-    } else {
-      dispatch(setIsPaid(""));
-    }
-  }, [searchParams, dispatch]);
-
-  useEffect(() => {
     fetchEvents(1, false);
-  }, [filters.format ,filters.isPaid]);
+  }, [filters]);
 
   const { ref: observerRef, inView } = useInView({
     threshold: 0.5,

@@ -1,36 +1,17 @@
-import { setIsPaid, setFormat } from "@/store/slices/filterSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router";
+import { useEventFilters } from "@/hooks/useEventFilters";
 
 export default function EventFilterBar() {
-  const dispatch = useDispatch();
-  const filters = useSelector((state) => state.filters);
-
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  function updateParams(updates) {
-    const params = new URLSearchParams(searchParams);
-    Object.entries(updates).forEach(([key, val]) => {
-      if (val !== undefined && val !== "" && val !== null) {
-        params.set(key, String(val));
-      } else {
-        params.delete(key);
-      }
-    });
-    setSearchParams(params);
-  }
+  const { updateParams, searchParams, filters } = useEventFilters();
 
   function handleFormatChange(format) {
-    dispatch(setFormat(format));
     updateParams({ format });
   }
 
   function handleIsPaid(entry) {
-    dispatch(setIsPaid(entry));
     updateParams({ isPaid: entry });
   }
 
-  const activeFormat = searchParams.get("format") || filters.format;
+  const activeFormat = searchParams.get("format");
 
   return (
     <div className="space-y-4">
@@ -239,7 +220,7 @@ export default function EventFilterBar() {
             type="button"
             onClick={() => handleIsPaid("")}
             className={`px-2.5 py-1 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
-              filters.isPaid ===  "" || null
+              filters.isPaid === "" || null
                 ? "bg-stone-800 text-white border-stone-800"
                 : "bg-white border-[#DDD9CE] text-stone-600"
             }`}
