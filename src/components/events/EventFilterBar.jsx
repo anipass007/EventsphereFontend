@@ -1,4 +1,4 @@
-import { useEventFilters } from "@/hooks/useEventFilters";
+ import { useEventFilters } from "@/hooks/useEventFilters";
 import api from "@/lib/axios";
 import { memo, useEffect, useMemo, useState } from "react";
 
@@ -32,14 +32,11 @@ export const EventFilterBar = memo(() => {
   const activeCategory = filters.category;
 
   const totalCategoryEvent = useMemo(() => {
-    console.log("calculation....");
     return categories.reduce((acc, currVal) => {
       acc += currVal.eventCount;
       return acc;
     }, 0);
   }, [categories]);
-
-  console.log(totalCategoryEvent);
 
   return (
     <div className="space-y-4">
